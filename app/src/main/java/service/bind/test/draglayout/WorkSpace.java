@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -17,7 +16,7 @@ import android.widget.OverScroller;
  * 在workspace里面去判别，移动和，缩放2个操作
  * Created by ferris.xu on 2016/9/5.
  */
-public class WorkSpace extends ViewGroup implements DropTarget {
+public class WorkSpace extends BaseLayout implements DropTarget {
     private final static int INVALID_ID = -1;
     private int mActivePointerId = INVALID_ID;
     private float mLastY = 0;
@@ -42,12 +41,15 @@ public class WorkSpace extends ViewGroup implements DropTarget {
     private final static int TOUCH_MULTI = 2;
     private final static int TOUCH_STATE_RESET = 3;
     private int mTouchStase = TOUCH_STATE_RESET;
-    /**  缩放开始时的手指间距 */
+    /**
+     * 缩放开始时的手指间距
+     */
     private float mStartDis;
     //界面缩放值
     //用来作为判断双指缩放参数
     private float scale = 1.0f;
 
+    CellLayout mCellLayout;
 
     public WorkSpace(Context context) {
         super(context);
@@ -85,98 +87,13 @@ public class WorkSpace extends ViewGroup implements DropTarget {
          * false) you tell the UI toolkit that you want to draw
          */
         setWillNotDraw(false); //必须！！！！
+
+        // 将celllayout做为唯一子View 给Workspace做缩放
+
+        mCellLayout = new CellLayout(getContext());
+        addView(mCellLayout, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        /**
-         * 获得此ViewGroup上级容器为其推荐的宽和高，以及计算模式
-         */
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
-        // 计算出所有的childView的宽和高
-        measureChildren(widthMeasureSpec, heightMeasureSpec);
-        /**
-         * 记录如果是wrap_content是设置的宽和高
-         */
-        int width = 0;
-        int height = 0;
-        int cCount = getChildCount();
-        int cWidth = 0;
-        int cHeight = 0;
-        MarginLayoutParams cParams = null;
-        // 用于计算左边两个childView的高度
-        int lHeight = 0;
-        // 用于计算右边两个childView的高度，最终高度取二者之间大值
-        int rHeight = 0;
-
-        // 用于计算上边两个childView的宽度
-        int tWidth = 0;
-        // 用于计算下面两个childiew的宽度，最终宽度取二者之间大值
-        int bWidth = 0;
-        /**
-         * 根据childView计算的出的宽和高，以及设置的margin计算容器的宽和高，主要用于容器是warp_content时
-         */
-        for (int i = 0; i < cCount; i++) {
-            View childView = getChildAt(i);
-            cWidth = childView.getMeasuredWidth();
-            cHeight = childView.getMeasuredHeight();
-            cParams = (MarginLayoutParams) childView.getLayoutParams();
-            // 上面两个childView
-            if (i == 0 || i == 1) {
-                tWidth += cWidth + cParams.leftMargin + cParams.rightMargin;
-            }
-            if (i == 2 || i == 3) {
-                bWidth += cWidth + cParams.leftMargin + cParams.rightMargin;
-            }
-            if (i == 0 || i == 2) {
-                lHeight += cHeight + cParams.topMargin + cParams.bottomMargin;
-            }
-            if (i == 1 || i == 3) {
-                rHeight += cHeight + cParams.topMargin + cParams.bottomMargin;
-            }
-        }
-        width = Math.max(tWidth, bWidth);
-        height = Math.max(lHeight, rHeight);
-        /**
-         * 如果是wrap_content设置为我们计算的值
-         * 否则：直接设置为父容器计算的值
-         */
-        setMeasuredDimension((widthMode == MeasureSpec.EXACTLY) ? sizeWidth
-                : width, (heightMode == MeasureSpec.EXACTLY) ? sizeHeight
-                : height);
-    }
-
-
-    /**
-     * layout的时候，必须让每个子view都，位于 0,0起始位置，通过设置tanslation来定位
-     *
-     * @param changed
-     * @param l
-     * @param t
-     * @param r
-     * @param b
-     */
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        // layout child
-
-        int left = 0;
-        int top = 0;
-
-        int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View v = getChildAt(i);
-            if (v != null) {
-                v.layout(left, top, v.getWidth(), v.getHeight());
-            }
-        }
-
-        width = getMeasuredWidth();
-        height = getMeasuredHeight();
-    }
 
     private void initVelocityTrackerIfNotExist() {
         if (mVelocityTracker == null) {
@@ -206,6 +123,7 @@ public class WorkSpace extends ViewGroup implements DropTarget {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                isTouchMui=false;
                 int index = MotionEventCompat.getActionIndex(ev);
                 float y = MotionEventCompat.getY(ev, index);
                 float x = MotionEventCompat.getX(ev, index);
@@ -231,9 +149,11 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                 mSecondaryLastY = MotionEventCompat.getY(ev, index);
                 mSecondaryLastX = MotionEventCompat.getX(ev, index);
                 mStartDis = distance(ev);
+                isTouchMui=true;
                 break;
 
             case MotionEvent.ACTION_MOVE:
+
                 index = MotionEventCompat.findPointerIndex(ev, mActivePointerId);
                 y = MotionEventCompat.getY(ev, index);
                 x = MotionEventCompat.getX(ev, index);
@@ -244,9 +164,9 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                 if (yDiff > mTouchSlop || xDiff > mTouchSlop) {
 
                     //如果判别到又第二根手指撸下来，就拦截了
-                    if(mSecondaryPointerId!=INVALID_ID){
+                    if (mSecondaryPointerId != INVALID_ID) {
                         mTouchStase = TOUCH_MULTI;
-                    }else {
+                    } else {
                         //是滚动状态啦
                         mTouchStase = TOUCH_SCROLL;
 
@@ -259,7 +179,6 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                             parent.requestDisallowInterceptTouchEvent(true);
                         }
                     }
-
 
 
                     mLastY = y;
@@ -280,11 +199,11 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                     mSecondaryLastY = 0;
                     mSecondaryLastX = 0;
                 }
-                mStartDis=0;
+                mStartDis = 0;
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                if (mTouchStase == TOUCH_SCROLL||mTouchStase == TOUCH_MULTI) {
+                if (mTouchStase == TOUCH_SCROLL || mTouchStase == TOUCH_MULTI) {
                     //抬起的时候如果之前是滚动状态，记得恢复下overscroller
                     return true;
                 }
@@ -298,6 +217,7 @@ public class WorkSpace extends ViewGroup implements DropTarget {
     }
 
 
+    boolean isTouchMui=false;
     /**
      * 1、处理move状态
      * 2、处理缩放状态
@@ -317,6 +237,7 @@ public class WorkSpace extends ViewGroup implements DropTarget {
         int index = -1;
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                isTouchMui=false;
                 if (!mScroller.isFinished()) { //fling
                     mScroller.abortAnimation();
                 }
@@ -336,6 +257,7 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                 mSecondaryLastY = MotionEventCompat.getY(event, index);
                 mSecondaryLastX = MotionEventCompat.getX(event, index);
                 mStartDis = distance(event);
+                isTouchMui=true;
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 index = MotionEventCompat.getActionIndex(event);
@@ -350,7 +272,7 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                     mSecondaryLastY = 0;
                     mSecondaryLastX = 0;
                 }
-                mStartDis=0;
+                mStartDis = 0;
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mActivePointerId == INVALID_ID) {
@@ -367,25 +289,12 @@ public class WorkSpace extends ViewGroup implements DropTarget {
 
                 mLastX = x;
                 mLastY = y;
-
+                //真正处理双手指缩放
+                int count = event.getPointerCount();
                 //如果可以移动
-                if( Math.abs(deltaY) > mTouchSlop || Math.abs(deltaX) > mTouchSlop){
+                if (Math.abs(deltaY) > mTouchSlop || Math.abs(deltaX) > mTouchSlop) {
 
-                    if(mSecondaryPointerId!=INVALID_ID&&mTouchStase!=TOUCH_MULTI){
-                        requestParentDisallowInterceptTouchEvent();
-                        mTouchStase=TOUCH_MULTI;
-                        // 减少滑动的距离
-                        if (deltaY > 0) {
-                            deltaY -= mTouchSlop;
-                        } else {
-                            deltaY += mTouchSlop;
-                        }
-                        if (deltaX > 0) {
-                            deltaX -= mTouchSlop;
-                        } else {
-                            deltaX += mTouchSlop;
-                        }
-                    }else if (mTouchStase != TOUCH_SCROLL ) {
+                    if ( mTouchStase != TOUCH_SCROLL) {
                         requestParentDisallowInterceptTouchEvent();
                         mTouchStase = TOUCH_SCROLL;
                         // 减少滑动的距离
@@ -402,34 +311,33 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                     }
                 }
 
+                if (  count == 2&&mSecondaryPointerId != INVALID_ID && mTouchStase != TOUCH_MULTI) {
+                    requestParentDisallowInterceptTouchEvent();
+                    mTouchStase = TOUCH_MULTI;
+                }
 
-
-                if (mTouchStase == TOUCH_SCROLL) {
+                if (!isTouchMui&&mTouchStase == TOUCH_SCROLL&& count == 1 ) {
                     //直接滑动
                     Log.e("TEST", "overscroll" + deltaY + " scrollRange" + getScrollRange() + " overScrollDistance" + mOverScrollDistance);
                     //overScrollBy((int)deltaX,(int)deltaY,getScrollX(),getScrollY(),0,getScrollRange(),0,mOverScrollDistance,true);
                     scrollBy((int) deltaX, (int) deltaY);
-                }
-
-                //真正处理双手指缩放
-                int count=event.getPointerCount();
-                if(mTouchStase==TOUCH_MULTI&&count==2){
+                }else if (mTouchStase == TOUCH_MULTI && count == 2) {
                     //保持比例缩放
                     float endDis = distance(event);// 结束距离
                     if (endDis > 10f) { // 两个手指并拢在一起的时候像素大于10
                         float scale = endDis / mStartDis;// 得到缩放倍数
-                        mStartDis=endDis;//重置距离
-//                        float oldScaleX=getScaleX();
-//                        float oldScaleY=getScaleX();
-//                        setScaleX(oldScaleX+scale);
-//                        setScaleY(oldScaleY+scale);
+                        float detalScale=(endDis-mStartDis)/endDis;
+                        float oldScaleX=mCellLayout.getScaleX();
+                        float oldScaleY=mCellLayout.getScaleX();
+                        //向外放大
+                        mCellLayout.setScacle(oldScaleX+detalScale,oldScaleY+ detalScale);
+                        mStartDis = endDis;//重置距离
                     }
-
                 }
 
                 if (mSecondaryPointerId != INVALID_ID) {
                     index = MotionEventCompat.findPointerIndex(event, mSecondaryPointerId);
-                    if(index!=-1){
+                    if (index != -1) {
                         mSecondaryLastY = MotionEventCompat.getY(event, index);
                         mSecondaryLastX = MotionEventCompat.getX(event, index);
                     }
@@ -437,8 +345,6 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-//                endDrag();
-//                break;
             case MotionEvent.ACTION_UP:
                 if (mTouchStase == TOUCH_SCROLL) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingSpeed);
@@ -466,9 +372,10 @@ public class WorkSpace extends ViewGroup implements DropTarget {
 
 
     /**
-     *  计算两个手指间的距离
-     *  @param event
-     *  @return
+     * 计算两个手指间的距离
+     *
+     * @param event
+     * @return
      */
     private float distance(MotionEvent event) {
         float dx = event.getX(1) - event.getX(0);
@@ -476,13 +383,14 @@ public class WorkSpace extends ViewGroup implements DropTarget {
         /** 使用勾股定理返回两点之间的距离 */
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
+
     private void endDrag() {
         mTouchStase = TOUCH_STATE_RESET;
         recycleVelocityTracker();
         mActivePointerId = INVALID_ID;
         mLastY = 0;
         mLastX = 0;
-        mStartDis=0;
+        mStartDis = 0;
     }
 
     private void doFling(int speedx, int speedy) {
@@ -529,14 +437,14 @@ public class WorkSpace extends ViewGroup implements DropTarget {
                 if (mDragView.getTag() != null && mDragView.getTag() instanceof ItemInfo) {
                     int tanslationx = dragObject.x + getScrollX();
                     int tanslationy = dragObject.y + getScrollY();
-                    ;
+
                     ((ItemInfo) mDragView.getTag()).x = tanslationx;
                     ((ItemInfo) mDragView.getTag()).y = tanslationy;
                     mDragView.setTranslationX(tanslationx);
                     mDragView.setTranslationY(tanslationy);
                 }
 
-                addView(mDragView);
+                mCellLayout.addView(mDragView);
 
             }
         }
