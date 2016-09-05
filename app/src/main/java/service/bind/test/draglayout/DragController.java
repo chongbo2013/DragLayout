@@ -274,7 +274,7 @@ public class DragController {
     }
 
     public boolean onTouchEvent(MotionEvent ev) {
-        if (!mDragging) {
+         if (!mDragging) {
             return false;
         }
 

@@ -8,14 +8,14 @@
     >
 
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/custom_navbar" />
+
 
     <service.bind.test.draglayout.WorkSpace
         android:id="@+id/mWorkspace"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/custom_navbar" />
 </service.bind.test.draglayout.DragLayer>
