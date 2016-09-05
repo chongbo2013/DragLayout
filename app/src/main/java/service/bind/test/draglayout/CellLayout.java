@@ -1,6 +1,10 @@
 package service.bind.test.draglayout;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -13,16 +17,20 @@ import com.nineoldandroids.view.ViewHelper;
  */
 public class CellLayout  extends BaseLayout{
     AnimatorSet set = new AnimatorSet();
+    Paint mPaint=new Paint();
     public CellLayout(Context context) {
         super(context);
+        init();
     }
 
     public CellLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public CellLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
     public void init(){
 //        set.playTogether(
@@ -36,6 +44,8 @@ public class CellLayout  extends BaseLayout{
 //                ObjectAnimator.ofFloat(myView, alpha, 1, 0.25f, 1)
 //        );
 //        set.setDuration(5 * 1000);
+
+        mPaint.setColor(Color.BLUE);
     }
 
 
@@ -49,6 +59,13 @@ public class CellLayout  extends BaseLayout{
 //        animate().scaleX(v);
 //        animate().scaleY(v1);
 
+    }
+
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        canvas.drawRect(new Rect(0,0,getWidth(),getHeight()),mPaint);
+        super.dispatchDraw(canvas);
     }
 
     @Override
