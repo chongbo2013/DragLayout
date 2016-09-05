@@ -11,23 +11,21 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.FrameLayout;
 import android.widget.OverScroller;
 
 /**
  * 在workspace里面去判别，移动和，缩放2个操作
  * Created by ferris.xu on 2016/9/5.
  */
-public class WorkSpace extends ViewGroup implements DropTarget{
+public class WorkSpace extends ViewGroup implements DropTarget {
     private final static int INVALID_ID = -1;
     private int mActivePointerId = INVALID_ID;
-    private float mLastY=0;
-    private float mLastX=0;
+    private float mLastY = 0;
+    private float mLastX = 0;
 
     private int mSecondaryPointerId = INVALID_ID;
-    private float mSecondaryLastX=0;
-    private float mSecondaryLastY =0;
-
+    private float mSecondaryLastX = 0;
+    private float mSecondaryLastY = 0;
 
 
     private int mTouchSlop;
@@ -38,17 +36,17 @@ public class WorkSpace extends ViewGroup implements DropTarget{
     private OverScroller mScroller;
     private VelocityTracker mVelocityTracker;
 
-    int width=0,height=0;
+    int width = 0, height = 0;
     //触摸主要要3种状态
-    private final static int TOUCH_SCROLL =1;
-    private final static int TOUCH_MULTI =2;
-    private final static int TOUCH_STATE_RESET =3;
-    private int mTouchStase=TOUCH_STATE_RESET;
-
+    private final static int TOUCH_SCROLL = 1;
+    private final static int TOUCH_MULTI = 2;
+    private final static int TOUCH_STATE_RESET = 3;
+    private int mTouchStase = TOUCH_STATE_RESET;
+    /**  缩放开始时的手指间距 */
+    private float mStartDis;
     //界面缩放值
     //用来作为判断双指缩放参数
-    private float scale=1.0f;
-
+    private float scale = 1.0f;
 
 
     public WorkSpace(Context context) {
@@ -66,7 +64,7 @@ public class WorkSpace extends ViewGroup implements DropTarget{
         init();
     }
 
-    public void init(){
+    public void init() {
         MainActivity.get().getDragController().addDropWorkSpace(this);
         ViewConfiguration configuration = ViewConfiguration.get(getContext());
         mTouchSlop = configuration.getScaledTouchSlop();
@@ -98,8 +96,6 @@ public class WorkSpace extends ViewGroup implements DropTarget{
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
         int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
-
-
         // 计算出所有的childView的宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         /**
@@ -107,13 +103,10 @@ public class WorkSpace extends ViewGroup implements DropTarget{
          */
         int width = 0;
         int height = 0;
-
         int cCount = getChildCount();
-
         int cWidth = 0;
         int cHeight = 0;
         MarginLayoutParams cParams = null;
-
         // 用于计算左边两个childView的高度
         int lHeight = 0;
         // 用于计算右边两个childView的高度，最终高度取二者之间大值
@@ -123,43 +116,30 @@ public class WorkSpace extends ViewGroup implements DropTarget{
         int tWidth = 0;
         // 用于计算下面两个childiew的宽度，最终宽度取二者之间大值
         int bWidth = 0;
-
         /**
          * 根据childView计算的出的宽和高，以及设置的margin计算容器的宽和高，主要用于容器是warp_content时
          */
-        for (int i = 0; i < cCount; i++)
-        {
+        for (int i = 0; i < cCount; i++) {
             View childView = getChildAt(i);
             cWidth = childView.getMeasuredWidth();
             cHeight = childView.getMeasuredHeight();
             cParams = (MarginLayoutParams) childView.getLayoutParams();
-
             // 上面两个childView
-            if (i == 0 || i == 1)
-            {
+            if (i == 0 || i == 1) {
                 tWidth += cWidth + cParams.leftMargin + cParams.rightMargin;
             }
-
-            if (i == 2 || i == 3)
-            {
+            if (i == 2 || i == 3) {
                 bWidth += cWidth + cParams.leftMargin + cParams.rightMargin;
             }
-
-            if (i == 0 || i == 2)
-            {
+            if (i == 0 || i == 2) {
                 lHeight += cHeight + cParams.topMargin + cParams.bottomMargin;
             }
-
-            if (i == 1 || i == 3)
-            {
+            if (i == 1 || i == 3) {
                 rHeight += cHeight + cParams.topMargin + cParams.bottomMargin;
             }
-
         }
-
         width = Math.max(tWidth, bWidth);
         height = Math.max(lHeight, rHeight);
-
         /**
          * 如果是wrap_content设置为我们计算的值
          * 否则：直接设置为父容器计算的值
@@ -172,6 +152,7 @@ public class WorkSpace extends ViewGroup implements DropTarget{
 
     /**
      * layout的时候，必须让每个子view都，位于 0,0起始位置，通过设置tanslation来定位
+     *
      * @param changed
      * @param l
      * @param t
@@ -182,8 +163,8 @@ public class WorkSpace extends ViewGroup implements DropTarget{
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         // layout child
 
-        int left=0;
-        int top=0;
+        int left = 0;
+        int top = 0;
 
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
@@ -193,7 +174,7 @@ public class WorkSpace extends ViewGroup implements DropTarget{
             }
         }
 
-        width =getMeasuredWidth();
+        width = getMeasuredWidth();
         height = getMeasuredHeight();
     }
 
@@ -202,6 +183,7 @@ public class WorkSpace extends ViewGroup implements DropTarget{
             mVelocityTracker = VelocityTracker.obtain();
         }
     }
+
     private void recycleVelocityTracker() {
 //        if (mVelocityTracker != null) {
 //            mVelocityTracker.recycle();
@@ -214,6 +196,7 @@ public class WorkSpace extends ViewGroup implements DropTarget{
      * 1、如果是move
      * 2、多指并且有move
      * 3、其他条件super.onInterceptTouchEvent(ev);
+     *
      * @param ev
      * @return
      */
@@ -224,57 +207,69 @@ public class WorkSpace extends ViewGroup implements DropTarget{
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 int index = MotionEventCompat.getActionIndex(ev);
-                float y = MotionEventCompat.getY(ev,index);
-                float x = MotionEventCompat.getX(ev,index);
+                float y = MotionEventCompat.getY(ev, index);
+                float x = MotionEventCompat.getX(ev, index);
                 initVelocityTrackerIfNotExist();
                 mVelocityTracker.addMovement(ev);
                 mLastY = y;
                 mLastX = x;
-                mActivePointerId = MotionEventCompat.getPointerId(ev,index);
+                mActivePointerId = MotionEventCompat.getPointerId(ev, index);
                 //分两种情况，一种是初始动作，一个是界面正在滚动，down触摸停止滚动
-                if(!mScroller.isFinished()){
+                if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
                 }
-                if(mTouchStase==TOUCH_SCROLL||mTouchStase==TOUCH_MULTI){
+                if (mTouchStase == TOUCH_SCROLL || mTouchStase == TOUCH_MULTI) {
                     return true;
-                }else{
-                    mTouchStase=TOUCH_STATE_RESET;
+                } else {
+                    mTouchStase = TOUCH_STATE_RESET;
                 }
 
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 index = MotionEventCompat.getActionIndex(ev);
-                mSecondaryPointerId = MotionEventCompat.getPointerId(ev,index);
-                mSecondaryLastY = MotionEventCompat.getY(ev,index);
+                mSecondaryPointerId = MotionEventCompat.getPointerId(ev, index);
+                mSecondaryLastY = MotionEventCompat.getY(ev, index);
+                mSecondaryLastX = MotionEventCompat.getX(ev, index);
+                mStartDis = distance(ev);
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                index = MotionEventCompat.findPointerIndex(ev,mActivePointerId);
-                y = MotionEventCompat.getY(ev,index);
-                x = MotionEventCompat.getX(ev,index);
-                final float yDiff  = Math.abs(y-mLastY);
-                final float xDiff  = Math.abs(x-mLastX);
+                index = MotionEventCompat.findPointerIndex(ev, mActivePointerId);
+                y = MotionEventCompat.getY(ev, index);
+                x = MotionEventCompat.getX(ev, index);
+                final float yDiff = Math.abs(y - mLastY);
+                final float xDiff = Math.abs(x - mLastX);
 
 
-                if (yDiff > mTouchSlop||xDiff>mTouchSlop) {
-                    //是滚动状态啦
-                    mTouchStase = TOUCH_SCROLL;
+                if (yDiff > mTouchSlop || xDiff > mTouchSlop) {
+
+                    //如果判别到又第二根手指撸下来，就拦截了
+                    if(mSecondaryPointerId!=INVALID_ID){
+                        mTouchStase = TOUCH_MULTI;
+                    }else {
+                        //是滚动状态啦
+                        mTouchStase = TOUCH_SCROLL;
+
+                        initVelocityTrackerIfNotExist();
+                        mVelocityTracker.addMovement(ev);
+
+
+                        final ViewParent parent = getParent();
+                        if (parent != null) {
+                            parent.requestDisallowInterceptTouchEvent(true);
+                        }
+                    }
+
+
+
                     mLastY = y;
                     mLastX = x;
-                    initVelocityTrackerIfNotExist();
-                    mVelocityTracker.addMovement(ev);
-
-
-                    final ViewParent parent = getParent();
-                    if (parent != null) {
-                        parent.requestDisallowInterceptTouchEvent(true);
-                    }
                 }
 
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 index = MotionEventCompat.getActionIndex(ev);
-                int curId = MotionEventCompat.getPointerId(ev,index);
+                int curId = MotionEventCompat.getPointerId(ev, index);
                 if (curId == mActivePointerId) {
                     mActivePointerId = mSecondaryPointerId;
                     mLastY = mSecondaryLastY;
@@ -285,26 +280,28 @@ public class WorkSpace extends ViewGroup implements DropTarget{
                     mSecondaryLastY = 0;
                     mSecondaryLastX = 0;
                 }
+                mStartDis=0;
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                if(mTouchStase==TOUCH_SCROLL){
+                if (mTouchStase == TOUCH_SCROLL||mTouchStase == TOUCH_MULTI) {
                     //抬起的时候如果之前是滚动状态，记得恢复下overscroller
                     return true;
                 }
-                mTouchStase=TOUCH_STATE_RESET;
+                mTouchStase = TOUCH_STATE_RESET;
                 mActivePointerId = INVALID_ID;
                 recycleVelocityTracker();
                 break;
             default:
         }
-        return mTouchStase!=TOUCH_STATE_RESET;
+        return mTouchStase != TOUCH_STATE_RESET;
     }
 
 
     /**
      * 1、处理move状态
      * 2、处理缩放状态
+     *
      * @param event
      * @return
      */
@@ -323,69 +320,132 @@ public class WorkSpace extends ViewGroup implements DropTarget{
                 if (!mScroller.isFinished()) { //fling
                     mScroller.abortAnimation();
                 }
-                index  = MotionEventCompat.getActionIndex(event);
-                mActivePointerId = MotionEventCompat.getPointerId(event,index);
-                mLastY = MotionEventCompat.getY(event,index);
-                mLastX = MotionEventCompat.getX(event,index);
-                if(mTouchStase==TOUCH_SCROLL||mTouchStase==TOUCH_MULTI){
+                index = MotionEventCompat.getActionIndex(event);
+                mActivePointerId = MotionEventCompat.getPointerId(event, index);
+                mLastY = MotionEventCompat.getY(event, index);
+                mLastX = MotionEventCompat.getX(event, index);
+                if (mTouchStase == TOUCH_SCROLL || mTouchStase == TOUCH_MULTI) {
                     return true;
-                }else{
-                    mTouchStase=TOUCH_STATE_RESET;
+                } else {
+                    mTouchStase = TOUCH_STATE_RESET;
                 }
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                index = MotionEventCompat.getActionIndex(event);
+                mSecondaryPointerId = MotionEventCompat.getPointerId(event, index);
+                mSecondaryLastY = MotionEventCompat.getY(event, index);
+                mSecondaryLastX = MotionEventCompat.getX(event, index);
+                mStartDis = distance(event);
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                index = MotionEventCompat.getActionIndex(event);
+                int curId = MotionEventCompat.getPointerId(event, index);
+                if (curId == mActivePointerId) {
+                    mActivePointerId = mSecondaryPointerId;
+                    mLastY = mSecondaryLastY;
+                    mLastX = mSecondaryLastX;
+                    mVelocityTracker.clear();
+                } else {
+                    mSecondaryPointerId = INVALID_ID;
+                    mSecondaryLastY = 0;
+                    mSecondaryLastX = 0;
+                }
+                mStartDis=0;
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mActivePointerId == INVALID_ID) {
                     break;
                 }
-                index = MotionEventCompat.findPointerIndex(event,mActivePointerId);
+                index = MotionEventCompat.findPointerIndex(event, mActivePointerId);
                 if (index == -1) {
                     break;
                 }
-                float y = MotionEventCompat.getY(event,index);
-                float x = MotionEventCompat.getX(event,index);
+                float y = MotionEventCompat.getY(event, index);
+                float x = MotionEventCompat.getX(event, index);
                 float deltaY = mLastY - y;
                 float deltaX = mLastX - x;
 
-                mLastX=x;
-                mLastY=y;
+                mLastX = x;
+                mLastY = y;
 
-                if (mTouchStase!=TOUCH_SCROLL && (Math.abs(deltaY) > mTouchSlop||Math.abs(deltaX) > mTouchSlop)) {
-                    requestParentDisallowInterceptTouchEvent();
-                    mTouchStase=TOUCH_SCROLL;
-                    // 减少滑动的距离
-                    if (deltaY > 0) {
-                        deltaY -= mTouchSlop;
-                    } else {
-                        deltaY += mTouchSlop;
-                    }
-                    if (deltaX > 0) {
-                        deltaX -= mTouchSlop;
-                    } else {
-                        deltaX += mTouchSlop;
+                //如果可以移动
+                if( Math.abs(deltaY) > mTouchSlop || Math.abs(deltaX) > mTouchSlop){
+
+                    if(mSecondaryPointerId!=INVALID_ID&&mTouchStase!=TOUCH_MULTI){
+                        requestParentDisallowInterceptTouchEvent();
+                        mTouchStase=TOUCH_MULTI;
+                        // 减少滑动的距离
+                        if (deltaY > 0) {
+                            deltaY -= mTouchSlop;
+                        } else {
+                            deltaY += mTouchSlop;
+                        }
+                        if (deltaX > 0) {
+                            deltaX -= mTouchSlop;
+                        } else {
+                            deltaX += mTouchSlop;
+                        }
+                    }else if (mTouchStase != TOUCH_SCROLL ) {
+                        requestParentDisallowInterceptTouchEvent();
+                        mTouchStase = TOUCH_SCROLL;
+                        // 减少滑动的距离
+                        if (deltaY > 0) {
+                            deltaY -= mTouchSlop;
+                        } else {
+                            deltaY += mTouchSlop;
+                        }
+                        if (deltaX > 0) {
+                            deltaX -= mTouchSlop;
+                        } else {
+                            deltaX += mTouchSlop;
+                        }
                     }
                 }
 
-                if (mTouchStase==TOUCH_SCROLL) {
+
+
+                if (mTouchStase == TOUCH_SCROLL) {
                     //直接滑动
-                    Log.e("TEST","overscroll"+deltaY+" scrollRange"+getScrollRange()+" overScrollDistance"+mOverScrollDistance);
+                    Log.e("TEST", "overscroll" + deltaY + " scrollRange" + getScrollRange() + " overScrollDistance" + mOverScrollDistance);
                     //overScrollBy((int)deltaX,(int)deltaY,getScrollX(),getScrollY(),0,getScrollRange(),0,mOverScrollDistance,true);
-                    scrollBy((int)deltaX,(int)deltaY);
+                    scrollBy((int) deltaX, (int) deltaY);
                 }
+
+                //真正处理双手指缩放
+                int count=event.getPointerCount();
+                if(mTouchStase==TOUCH_MULTI&&count==2){
+                    //保持比例缩放
+                    float endDis = distance(event);// 结束距离
+                    if (endDis > 10f) { // 两个手指并拢在一起的时候像素大于10
+                        float scale = endDis / mStartDis;// 得到缩放倍数
+                        mStartDis=endDis;//重置距离
+//                        float oldScaleX=getScaleX();
+//                        float oldScaleY=getScaleX();
+//                        setScaleX(oldScaleX+scale);
+//                        setScaleY(oldScaleY+scale);
+                    }
+
+                }
+
                 if (mSecondaryPointerId != INVALID_ID) {
-                    index = MotionEventCompat.findPointerIndex(event,mSecondaryPointerId);
-                    mSecondaryLastY = MotionEventCompat.getY(event,index);
+                    index = MotionEventCompat.findPointerIndex(event, mSecondaryPointerId);
+                    if(index!=-1){
+                        mSecondaryLastY = MotionEventCompat.getY(event, index);
+                        mSecondaryLastX = MotionEventCompat.getX(event, index);
+                    }
+
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-                endDrag();
-                break;
+//                endDrag();
+//                break;
             case MotionEvent.ACTION_UP:
-                if (mTouchStase==TOUCH_SCROLL) {
-                    mVelocityTracker.computeCurrentVelocity(1000,mMaxFlingSpeed);
-                    int initialVelocity = (int)mVelocityTracker.getYVelocity(mActivePointerId);
-                    int initialVelocitx = (int)mVelocityTracker.getXVelocity(mActivePointerId);
-                    Log.e("TEST","velocity"+initialVelocity+" "+mMinFlingSpeed);
-                    if (Math.abs(initialVelocity) > mMinFlingSpeed||Math.abs(initialVelocitx) > mMinFlingSpeed) {
+                if (mTouchStase == TOUCH_SCROLL) {
+                    mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingSpeed);
+                    int initialVelocity = (int) mVelocityTracker.getYVelocity(mActivePointerId);
+                    int initialVelocitx = (int) mVelocityTracker.getXVelocity(mActivePointerId);
+                    Log.e("TEST", "velocity" + initialVelocity + " " + mMinFlingSpeed);
+                    if (Math.abs(initialVelocity) > mMinFlingSpeed || Math.abs(initialVelocitx) > mMinFlingSpeed) {
                         // fling
 //                        doFling(-initialVelocitx,-initialVelocity);
                     }
@@ -404,34 +464,48 @@ public class WorkSpace extends ViewGroup implements DropTarget{
         return true;
     }
 
+
+    /**
+     *  计算两个手指间的距离
+     *  @param event
+     *  @return
+     */
+    private float distance(MotionEvent event) {
+        float dx = event.getX(1) - event.getX(0);
+        float dy = event.getY(1) - event.getY(0);
+        /** 使用勾股定理返回两点之间的距离 */
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
     private void endDrag() {
         mTouchStase = TOUCH_STATE_RESET;
         recycleVelocityTracker();
         mActivePointerId = INVALID_ID;
         mLastY = 0;
         mLastX = 0;
+        mStartDis=0;
     }
-    private void doFling(int speedx,int speedy) {
+
+    private void doFling(int speedx, int speedy) {
         if (mScroller == null) {
             return;
         }
-        mScroller.fling(getScrollX(),getScrollY(),speedx,speedy,0,0,-500,10000);
+        mScroller.fling(getScrollX(), getScrollY(), speedx, speedy, 0, 0, -500, 10000);
         invalidate();
     }
 
     private int getScrollRange() {
         int scrollRange = 0;
-        if (getChildCount() >0) {
+        if (getChildCount() > 0) {
             int totalHeight = 0;
             if (getChildCount() > 0) {
-                for(int i=0;i<getChildCount();i++) {
+                for (int i = 0; i < getChildCount(); i++) {
                     totalHeight += getChildAt(i).getHeight();
                     //先假设没有margin的情况
                 }
             }
-            scrollRange = Math.max(0,totalHeight-getHeight());
+            scrollRange = Math.max(0, totalHeight - getHeight());
         }
-        Log.e("TEST","scrollRange is"+scrollRange);
+        Log.e("TEST", "scrollRange is" + scrollRange);
         return scrollRange;
     }
 
@@ -442,20 +516,22 @@ public class WorkSpace extends ViewGroup implements DropTarget{
             parent.requestDisallowInterceptTouchEvent(true);
         }
     }
+
     @Override
     public void onDrop(DragObject dragObject) {
-        if(dragObject!=null){
-            DragView mDragView= (DragView) dragObject.dragView;
-            if(mDragView!=null) {
+        if (dragObject != null) {
+            DragView mDragView = (DragView) dragObject.dragView;
+            if (mDragView != null) {
                 if (mDragView.getParent() != null) {
                     ((ViewGroup) mDragView.getParent()).removeView(mDragView);
                 }
                 //这里需要记录最好放下的位置，方便后面进行view的缩放操作
-                if (mDragView.getTag()!=null&&mDragView.getTag() instanceof ItemInfo){
-                    int tanslationx=dragObject.x+getScrollX();
-                    int tanslationy=dragObject.y+getScrollY();;
-                    ((ItemInfo)mDragView.getTag()).x=tanslationx;
-                    ((ItemInfo)mDragView.getTag()).y=tanslationy;
+                if (mDragView.getTag() != null && mDragView.getTag() instanceof ItemInfo) {
+                    int tanslationx = dragObject.x + getScrollX();
+                    int tanslationy = dragObject.y + getScrollY();
+                    ;
+                    ((ItemInfo) mDragView.getTag()).x = tanslationx;
+                    ((ItemInfo) mDragView.getTag()).y = tanslationy;
                     mDragView.setTranslationX(tanslationx);
                     mDragView.setTranslationY(tanslationy);
                 }
@@ -469,19 +545,19 @@ public class WorkSpace extends ViewGroup implements DropTarget{
 
     @Override
     protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        Log.e("TEST","onOverScrolled x"+scrollX+" y"+scrollY);
+        Log.e("TEST", "onOverScrolled x" + scrollX + " y" + scrollY);
         if (!mScroller.isFinished()) {
             int oldX = getScrollX();
             int oldY = getScrollY();
-            scrollTo(scrollX,scrollY);
-            onScrollChanged(scrollX,scrollY,oldX,oldY);
+            scrollTo(scrollX, scrollY);
+            onScrollChanged(scrollX, scrollY, oldX, oldY);
             if (clampedY) {
-                Log.e("TEST1","springBack");
-                mScroller.springBack(getScrollX(),getScrollY(),0,0,0,getScrollRange());
+                Log.e("TEST1", "springBack");
+                mScroller.springBack(getScrollX(), getScrollY(), 0, 0, 0, getScrollRange());
             }
         } else {
             // TouchEvent中的overScroll调用
-            super.scrollTo(scrollX,scrollY);
+            super.scrollTo(scrollX, scrollY);
         }
     }
 
@@ -496,9 +572,9 @@ public class WorkSpace extends ViewGroup implements DropTarget{
 
             int range = getScrollRange();
             if (oldX != x || oldY != y) {
-                Log.e("TEST","computeScroll value is"+(y-oldY)+"oldY"+oldY);
+                Log.e("TEST", "computeScroll value is" + (y - oldY) + "oldY" + oldY);
 //                overScrollBy(x-oldX,y-oldY,oldX,oldY,0,range,0,mOverFlingDistance,false);
-                scrollTo(x,y);
+                scrollTo(x, y);
             }
 
         }
