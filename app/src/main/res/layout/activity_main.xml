@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service.bind.test.draglayout.DragLayer xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mDragLayer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/custom_navbar" />
+
+    <service.bind.test.draglayout.WorkSpace
+        android:id="@+id/mWorkspace"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</service.bind.test.draglayout.DragLayer>
