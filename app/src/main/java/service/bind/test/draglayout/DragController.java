@@ -7,6 +7,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
@@ -125,10 +126,11 @@ public class DragController {
 
         mDragObject = new DropTarget.DragObject();
         mDragObject.dragView = mDragView;
-        if(mDragView.getParent()==null) {
-            mLauncher.getDragLayer().addView(mDragView);
-        }
 
+        if(mDragView.getParent()!=null) {
+            ((ViewGroup)mDragView.getParent()).removeView(mDragView);
+        }
+        mLauncher.getDragLayer().addView(mDragView);
         mLauncher.getDragLayer().bringChildToFront(mDragView);
         mDragObject.dragSource = source;
         mLauncher.getDragLayer().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);

@@ -35,10 +35,18 @@ public class WorkSpace extends FrameLayout implements DropTarget{
     public void onDrop(DragObject dragObject) {
         if(dragObject!=null){
             DragView mDragView= (DragView) dragObject.dragView;
-            if(mDragView.getParent()!=null){
-                ((ViewGroup)mDragView.getParent()).removeView(mDragView);
+            if(mDragView!=null) {
+                if (mDragView.getParent() != null) {
+                    ((ViewGroup) mDragView.getParent()).removeView(mDragView);
+                }
+                //这里需要记录最好放下的位置，方便后面进行view的缩放操作
+                if (mDragView.getTag()!=null&&mDragView.getTag() instanceof ItemInfo){
+                    ((ItemInfo)mDragView.getTag()).x=dragObject.x;
+                    ((ItemInfo)mDragView.getTag()).y=dragObject.y;
+                }
+                addView(mDragView);
+
             }
-            addView(mDragView);
         }
     }
 
