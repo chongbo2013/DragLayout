@@ -50,10 +50,12 @@ public class CellLayout  extends BaseLayout{
 
 
     public void setScacle(float v, float v1) {
-//        setPivotX(getWidth()/2);
-//        setPivotY(getHeight()/2);
+//        setPivotX(0);
+//        setPivotY(0);
 //        ViewHelper.setScaleX(this,v);
 //        ViewHelper.setScaleX(this,v1);
+        if(v<=0.5f||v1<=0.5f||v>=1.0f||v1>=1.0f)
+            return;
         setScaleX(v);
         setScaleY(v1);
 //        animate().scaleX(v);

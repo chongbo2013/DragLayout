@@ -343,6 +343,8 @@ public class WorkSpace extends BaseLayout implements DropTarget {
                     }
 
                 }
+
+
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
@@ -367,6 +369,7 @@ public class WorkSpace extends BaseLayout implements DropTarget {
 //        if(event.getAction()==MotionEvent.ACTION_DOWN){
 //            return super.onTouchEvent(event);
 //        }
+        Log.d("scrollXY","scrollx="+getScrollX()+",scrolly="+getScrollY());
         return true;
     }
 
@@ -435,11 +438,12 @@ public class WorkSpace extends BaseLayout implements DropTarget {
                 }
                 //这里需要记录最好放下的位置，方便后面进行view的缩放操作
                 if (mDragView.getTag() != null && mDragView.getTag() instanceof ItemInfo) {
-                    int tanslationx = dragObject.x + getScrollX();
-                    int tanslationy = dragObject.y + getScrollY();
+                    float tanslationx = (dragObject.x +getScrollX()-(1-mCellLayout.getScaleX())*mCellLayout.getWidth()/2)/mCellLayout.getScaleX();
+                    float tanslationy = (dragObject.y +getScrollY()-(1-mCellLayout.getScaleY())*mCellLayout.getHeight()/2)/mCellLayout.getScaleY();
 
-                    ((ItemInfo) mDragView.getTag()).x = tanslationx;
-                    ((ItemInfo) mDragView.getTag()).y = tanslationy;
+                    ((ItemInfo) mDragView.getTag()).x = (int) tanslationx;
+                    ((ItemInfo) mDragView.getTag()).y = (int) tanslationy;
+
                     mDragView.setTranslationX(tanslationx);
                     mDragView.setTranslationY(tanslationy);
                 }
