@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -49,15 +50,18 @@ public class CellLayout  extends BaseLayout{
     }
 
 
+
     public void setScacle(float v, float v1) {
 //        setPivotX(0);
 //        setPivotY(0);
 //        ViewHelper.setScaleX(this,v);
 //        ViewHelper.setScaleX(this,v1);
-        if(v<=0.5f||v1<=0.5f||v>=1.0f||v1>=1.0f)
-            return;
-        setScaleX(v);
-        setScaleY(v1);
+//        if(v<=0.2f||v1<=0.2f||v>=1.0f||v1>=1.0f)
+//            return;
+        if(v>=0.2f&&v<=1.0f) {
+            setScaleX(v);
+            setScaleY(v1);
+        }
 //        animate().scaleX(v);
 //        animate().scaleY(v1);
 

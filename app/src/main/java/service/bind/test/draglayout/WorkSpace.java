@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.OverScroller;
 
+import com.nineoldandroids.view.ViewHelper;
+
 /**
  * 在workspace里面去判别，移动和，缩放2个操作
  * Created by ferris.xu on 2016/9/5.
@@ -428,6 +430,13 @@ public class WorkSpace extends BaseLayout implements DropTarget {
         }
     }
 
+//    public float[] getReleateXY(MotionEvent event){
+//        float[] xy=new float[2];
+//        xy[0] = (event.getX() +getScrollX()-(1-mCellLayout.getScaleX())*mCellLayout.getWidth()/2)/mCellLayout.getScaleX();
+//        xy[1] = (event.getY() +getScrollY()-(1-mCellLayout.getScaleY())*mCellLayout.getHeight()/2)/mCellLayout.getScaleY();
+//        return xy;
+//    }
+
     @Override
     public void onDrop(DragObject dragObject) {
         if (dragObject != null) {
@@ -444,6 +453,9 @@ public class WorkSpace extends BaseLayout implements DropTarget {
                     ((ItemInfo) mDragView.getTag()).x = (int) tanslationx;
                     ((ItemInfo) mDragView.getTag()).y = (int) tanslationy;
 
+
+//                    ViewHelper.setTranslationX(mDragView, tanslationx);
+//                    ViewHelper.setTranslationX(mDragView, tanslationy);
                     mDragView.setTranslationX(tanslationx);
                     mDragView.setTranslationY(tanslationy);
                 }
