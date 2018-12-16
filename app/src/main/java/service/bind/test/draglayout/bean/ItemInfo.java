@@ -1,14 +1,21 @@
 package service.bind.test.draglayout.bean;
 
+import com.free.launcher.wallpaperstore.mxdownload.xutils.db.annotation.Column;
+import com.free.launcher.wallpaperstore.mxdownload.xutils.db.annotation.Table;
+
 /**
  * Created by 图标信息 on 2016/9/5.
  */
+@Table(name = "ItemInfo")
 public class ItemInfo {
     //数据库ID
+    @Column(name = "id", isId = true)
     public int id;
     //图标唯一标识
     public int key;
     //标题
+
+    @Column(name = "title")
     public String title;
     //图标
     public int icon;

@@ -12,7 +12,7 @@ import service.bind.test.draglayout.widget.WorkSpace;
 
 //https://github.com/NashLegend/Launcher/tree/master/src/com/android/launcher2
 //参考Launcher2
-public class Launcher extends Activity {
+public class Launcher extends Activity implements LauncherModel.CallBack {
     private static Launcher mActivity;
 
     public static Launcher get(){
