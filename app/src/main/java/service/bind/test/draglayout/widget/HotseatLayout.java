@@ -1,24 +1,28 @@
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import service.bind.test.draglayout.bean.ItemInfo;
+import service.bind.test.draglayout.Launcher;
+import service.bind.test.draglayout.R;
+
 /**
  * Created by ferri.sxu on 2016/9/5.
  */
-public class BottomToolbar extends LinearLayout implements View.OnLongClickListener{
+public class HotseatLayout extends LinearLayout implements View.OnLongClickListener{
 
-    public BottomToolbar(Context context) {
+    public HotseatLayout(Context context) {
         super(context);
     }
 
-    public BottomToolbar(Context context, AttributeSet attrs) {
+    public HotseatLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public BottomToolbar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HotseatLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -38,7 +42,7 @@ public class BottomToolbar extends LinearLayout implements View.OnLongClickListe
     public boolean onLongClick(View v) {
         if(v instanceof IconView) {
             IconView iconView= (IconView) v;
-            MainActivity.get().getDragController().startDrag(iconView,iconView);
+            Launcher.get().getDragController().startDrag(iconView,iconView);
         }
         return true;
     }

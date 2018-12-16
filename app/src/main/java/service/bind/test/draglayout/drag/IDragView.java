@@ -1,4 +1,4 @@
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.drag;
 
 /**
  * Created by ferris on 2016/7/28.

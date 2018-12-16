@@ -1,5 +1,5 @@
 
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.drag;
 
 
 import android.graphics.Rect;
@@ -11,9 +11,13 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import service.bind.test.draglayout.Launcher;
+import service.bind.test.draglayout.widget.DragView;
+import service.bind.test.draglayout.widget.IconView;
+
 public class DragController {
 
-    private MainActivity mLauncher;
+    private Launcher mLauncher;
 
     private boolean mDragging;
 
@@ -43,11 +47,11 @@ public class DragController {
 
     private DropTarget mLastDropTarget;
 
-    public DragController(MainActivity launcher) {
+    public DragController(Launcher launcher) {
         mLauncher = launcher;
     }
 
-    public void setLauncher(MainActivity launcher){
+    public void setLauncher(Launcher launcher){
         this.mLauncher=launcher;
     }
     public void addDropWorkSpace(DropTarget target) {

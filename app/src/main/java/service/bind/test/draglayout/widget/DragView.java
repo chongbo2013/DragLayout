@@ -1,17 +1,18 @@
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
+import service.bind.test.draglayout.Launcher;
+import service.bind.test.draglayout.drag.DragSource;
+import service.bind.test.draglayout.drag.IDragView;
 
 /**
  * Created by Administrator on 2016/9/5.
  */
-public class DragView extends ImageView implements IDragView,DragSource{
+public class DragView extends ImageView implements IDragView,DragSource {
     public DragView(Context context) {
         super(context);
         init();
@@ -32,7 +33,7 @@ public class DragView extends ImageView implements IDragView,DragSource{
         setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                MainActivity.get().getDragController().startDragNotCreate(DragView.this,DragView.this);
+                Launcher.get().getDragController().startDragNotCreate(DragView.this,DragView.this);
                 return true;
             }
         });

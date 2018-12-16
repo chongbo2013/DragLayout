@@ -1,24 +1,24 @@
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.bean;
 
 /**
  * Created by 图标信息 on 2016/9/5.
  */
 public class ItemInfo {
     //数据库ID
-    int id;
+    public int id;
     //图标唯一标识
-    int key;
+    public int key;
     //标题
-    String title;
+    public String title;
     //图标
-    int icon;
+    public int icon;
     //拖拽到拖动层显示图片
-    int dragIcon;
+    public int dragIcon;
     //缩放值
-    float scacle=1f;
+    public float scacle=1f;
     //位置
-    int x=0;
-    int y=0;
+    public int x=0;
+    public int y=0;
 
     public int getY() {
         return y;

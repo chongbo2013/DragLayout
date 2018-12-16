@@ -1,4 +1,4 @@
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.widget;
 
 
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
+
+import service.bind.test.draglayout.drag.DragController;
 
 public class DragLayer extends FrameLayout {
     private DragController mDragController;
@@ -47,13 +49,9 @@ public class DragLayer extends FrameLayout {
 
     }
 
-    //    public static Rect testRect=new Rect();
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
-//        if(testRect!=null){
-//            canvas.setDrawColor(Color.BLUE);
-//            canvas.drawRect(testRect.left,testRect.top,testRect.right,testRect.bottom);
-//        }
         super.dispatchDraw(canvas);
     }
 

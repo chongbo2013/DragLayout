@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<service.bind.test.draglayout.BottomToolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<service.bind.test.draglayout.widget.HotseatLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="56dip"
     android:layout_gravity="bottom"
@@ -8,7 +8,7 @@
     android:orientation="horizontal">
 
 
-    <service.bind.test.draglayout.IconView
+    <service.bind.test.draglayout.widget.IconView
         android:layout_width="48dip"
         android:layout_height="48dip"
         android:layout_margin="5dip"
@@ -21,9 +21,9 @@
             android:layout_height="wrap_content"
             android:src="@drawable/icon_building"
      />
-    </service.bind.test.draglayout.IconView>
+    </service.bind.test.draglayout.widget.IconView>
 
-    <service.bind.test.draglayout.IconView
+    <service.bind.test.draglayout.widget.IconView
         android:layout_width="48dip"
         android:layout_height="48dip"
         android:layout_margin="5dip"
@@ -35,9 +35,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_gjx" />
-    </service.bind.test.draglayout.IconView>
+    </service.bind.test.draglayout.widget.IconView>
 
-    <service.bind.test.draglayout.IconView
+    <service.bind.test.draglayout.widget.IconView
         android:layout_width="48dip"
         android:layout_height="48dip"
         android:layout_margin="5dip"
@@ -49,9 +49,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_door1" />
-    </service.bind.test.draglayout.IconView>
+    </service.bind.test.draglayout.widget.IconView>
 
-    <service.bind.test.draglayout.IconView
+    <service.bind.test.draglayout.widget.IconView
         android:id="@+id/door2"
         android:layout_width="48dip"
         android:layout_height="48dip"
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/icon_door2_small" />
-    </service.bind.test.draglayout.IconView>
+    </service.bind.test.draglayout.widget.IconView>
 
 
-</service.bind.test.draglayout.BottomToolbar>
+</service.bind.test.draglayout.widget.HotseatLayout>

@@ -1,4 +1,4 @@
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,10 +13,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import service.bind.test.draglayout.drag.DragSource;
+import service.bind.test.draglayout.R;
+
 /**
  * Created by ferris.xu on 2016/9/5.
  */
-public class IconView extends LinearLayout implements DragSource{
+public class IconView extends LinearLayout implements DragSource {
     public IconView(Context context) {
         super(context);
     }

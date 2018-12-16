@@ -1,18 +1,25 @@
 package service.bind.test.draglayout;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MainActivity extends AppCompatActivity {
-    private static MainActivity mActivity;
+import service.bind.test.draglayout.drag.DragController;
+import service.bind.test.draglayout.widget.DragLayer;
+import service.bind.test.draglayout.widget.HotseatLayout;
+import service.bind.test.draglayout.widget.WorkSpace;
 
-    public static MainActivity get(){
+//https://github.com/NashLegend/Launcher/tree/master/src/com/android/launcher2
+//参考Launcher2
+public class Launcher extends Activity {
+    private static Launcher mActivity;
+
+    public static Launcher get(){
         return mActivity;
     }
 
-    BottomToolbar mBottomToolbar;
+    HotseatLayout mBottomToolbar;
     DragLayer mDragLayer;
     DragController mDragController;
     WorkSpace mWorkSpace;
@@ -25,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         mDragLayer= (DragLayer) findViewById(R.id.mDragLayer);
         mDragLayer.setup(mDragController);
         mWorkSpace= (WorkSpace) findViewById(R.id.mWorkspace);
-        mBottomToolbar= (BottomToolbar) findViewById(R.id.toolbar);
+        mBottomToolbar= (HotseatLayout) findViewById(R.id.toolbar);
     }
 
     public View getToolBar() {

@@ -1,5 +1,5 @@
 
-package service.bind.test.draglayout;
+package service.bind.test.draglayout.drag;
 
 
 import android.graphics.Rect;
