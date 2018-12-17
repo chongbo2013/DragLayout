@@ -1,18 +1,19 @@
 package service.bind.test.draglayout.widget;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 
 import service.bind.test.draglayout.Launcher;
+import service.bind.test.draglayout.bean.ItemInfo;
 import service.bind.test.draglayout.drag.DragSource;
 import service.bind.test.draglayout.drag.IDragView;
 
 /**
  * Created by Administrator on 2016/9/5.
  */
-public class DragView extends ImageView implements IDragView,DragSource {
+public class DragView extends AppCompatImageView implements IDragView,IWidget {
     public DragView(Context context) {
         super(context);
         init();
@@ -29,14 +30,7 @@ public class DragView extends ImageView implements IDragView,DragSource {
     }
 
     public void init(){
-        setLongClickable(true);
-        setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Launcher.get().getDragController().startDragNotCreate(DragView.this,DragView.this);
-                return true;
-            }
-        });
+
     }
 
     @Override
@@ -52,9 +46,15 @@ public class DragView extends ImageView implements IDragView,DragSource {
         setTranslationY(y);
     }
 
+
+
     @Override
-    public void onDropCompleted(View targetView) {
-
+    public ItemInfo getInfo() {
+        return info;
     }
-
+    ItemInfo info;
+    @Override
+    public void setInfo(ItemInfo info) {
+        this.info=info;
+    }
 }

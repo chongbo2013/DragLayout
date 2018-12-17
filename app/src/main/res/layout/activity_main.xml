@@ -11,7 +11,8 @@
         android:id="@+id/mWorkspace"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipChildren="false"/>
+        android:clipChildren="false"
+        android:layout_marginBottom="56dip"/>
 
     <include
         android:id="@+id/toolbar"

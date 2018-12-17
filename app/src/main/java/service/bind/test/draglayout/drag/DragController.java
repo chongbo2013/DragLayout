@@ -81,72 +81,47 @@ public class DragController {
         void onDragEnd();
     }
 
-
+    private final int[] mCoordinatesTemp = new int[2];
     /**
      * 从icon里面创建一个拖动的图标，放到拖动层里面
-     * @param source
-     * @param seleteview
+     * @param v
      */
-    public void startDrag(DragSource source, IconView seleteview) {
+    public void startDrag( DragSource source,IconView v) {
         mDragging = true;
         mDropTargets = mDropWorkSpace;
 
         // get a offset rectangle of workspace.
-        Rect r = new Rect();
-        mLauncher.getToolBar().getGlobalVisibleRect(r);
-        r.offset(seleteview.getLeft(),seleteview.getTop());
+        int[] loc = mCoordinatesTemp;
+        mLauncher.getDragLayer().getLocationInDragLayer(v, loc);
 
-        DragView mDragView=seleteview.createDragView(r);
-        mDragView.setTag(seleteview.getTag());
+        int dragLayerX = loc[0];
+        int dragLayerY = loc[1];
+        int width=v.getWidth();
+        int height=v.getHeight();
+
+        if(v.getParent()!=null) {
+            ((ViewGroup)v.getParent()).removeView(v);
+        }
 
         mDragObject = new DropTarget.DragObject();
-        mDragObject.dragView = mDragView;
-        mLauncher.getDragLayer().addView(mDragView);
+        mDragObject.dragView = v;
+        mLauncher.getDragLayer().addView(v,width,height);
         mDragObject.dragSource = source;
         mLauncher.getDragLayer().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-        mOffsetX =seleteview.getWidth()/2;
-        mOffsetY = seleteview.getHeight()/2;
-        mMidOffsetX = 0;
-        mMidOffsetY = 0;
-        mDragObject.dragView.move(r.left,r.top);
+        mOffsetX =mMotionDownX -dragLayerX;
+        mOffsetY =mMotionDownY -dragLayerY;
+        mMidOffsetX = width/2;
+        mMidOffsetY = height/2;
+        move(v,dragLayerX,dragLayerY);
         for (DragListener listener : mListeners) {
-            listener.onDragStart(source, seleteview);
+            listener.onDragStart(source, v);
         }
     }
-
-    /**
-     * 直接在拖动层里拖动，自己
-     * @param source
-     * @param mDragView
-     */
-    public void startDragNotCreate(DragSource source, DragView mDragView) {
-        mDragging = true;
-        mDropTargets = mDropWorkSpace;
-
-        // get a offset rectangle of workspace.
-        Rect r = new Rect();
-        mDragView.getGlobalVisibleRect(r);
-
-
-        mDragObject = new DropTarget.DragObject();
-        mDragObject.dragView = mDragView;
-
-        if(mDragView.getParent()!=null) {
-            ((ViewGroup)mDragView.getParent()).removeView(mDragView);
-        }
-        mLauncher.getDragLayer().addView(mDragView);
-        mLauncher.getDragLayer().bringChildToFront(mDragView);
-        mDragObject.dragSource = source;
-        mLauncher.getDragLayer().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-        mOffsetX =mDragView.getWidth()/2;
-        mOffsetY = mDragView.getHeight()/2;
-        mMidOffsetX = 0;
-        mMidOffsetY = 0;
-//        mDragObject.dragView.move(0,0);
-        for (DragListener listener : mListeners) {
-            listener.onDragStart(source, mDragView);
-        }
+    public void move(View view,int x, int y) {
+        view.setTranslationX(x);
+        view.setTranslationY(y);
     }
+
 
 
 
@@ -268,8 +243,7 @@ public class DragController {
     }
 
     private void handleMoveEvent(int x, int y) {
-        mDragObject.dragView.move(x - mOffsetX, y - mOffsetY);
-
+        move((View)mDragObject.dragView,x - mOffsetX, y - mOffsetY);
         DropTarget dropTarget = findDropTarget(x - mMidOffsetX, y - mMidOffsetY);
         mDragObject.x = x - mMidOffsetX;
         mDragObject.y = y - mMidOffsetY;

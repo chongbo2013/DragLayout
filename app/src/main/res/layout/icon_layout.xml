@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service.bind.test.draglayout.widget.IconView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/building"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_building"
+        />
+</service.bind.test.draglayout.widget.IconView>

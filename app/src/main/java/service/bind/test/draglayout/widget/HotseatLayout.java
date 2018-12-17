@@ -29,13 +29,7 @@ public class HotseatLayout extends LinearLayout implements View.OnLongClickListe
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        for(int i=0;i<getChildCount();i++){
-            ItemInfo mInfo=new ItemInfo();
-            mInfo.dragIcon=R.drawable.icon_door;
-            mInfo.key=i;
-            getChildAt(i).setTag(mInfo);
-            getChildAt(i).setOnLongClickListener(this);
-        }
+
     }
 
     @Override

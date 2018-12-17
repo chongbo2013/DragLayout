@@ -1,25 +1,20 @@
 package service.bind.test.draglayout.widget;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import service.bind.test.draglayout.drag.DragSource;
 import service.bind.test.draglayout.R;
+import service.bind.test.draglayout.bean.ItemInfo;
+import service.bind.test.draglayout.drag.DragSource;
 
 /**
  * Created by ferris.xu on 2016/9/5.
  */
-public class IconView extends LinearLayout implements DragSource {
+public class IconView extends LinearLayout implements DragSource ,IWidget{
     public IconView(Context context) {
         super(context);
     }
@@ -31,64 +26,28 @@ public class IconView extends LinearLayout implements DragSource {
     public IconView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
-    /**
-     * 创建一个快捷图标
-     * @return
-     */
-    public DragView createDragView(Rect r){
-        Bitmap mBitmap=createBitmap();
-        if(mBitmap!=null) {
-            DragView mDragView = new DragView(getContext());
-            mDragView.setImageBitmap(mBitmap);
-            FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//            lp.leftMargin=r.left;
-//            lp.topMargin=r.top;
-            mDragView.setLayoutParams(lp);
-            return mDragView;
-        }
-
-        return  null;
+    public ItemInfo itemInfo;
+    public void setItemInfo(ItemInfo itemInfo){
+        this.itemInfo=itemInfo;
     }
-    private Bitmap createBitmap(){
-        clearFocus();
-        setPressed(false);
-        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-        draw(new Canvas(bitmap));
-        return bitmap;
+    public static IconView xml(ViewGroup parent){
+        return (IconView) LayoutInflater.from(parent.getContext()).inflate(R.layout.icon_layout,parent,false);
     }
+
 
     @Override
     public void onDropCompleted(View targetView) {
 
     }
 
+
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN:
-                scaleToSmaller(this);
-                break;
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                scaleToNormal(this);
-                break;
-            default:
-                break;
-        }
-        return super.onTouchEvent(event);
+    public ItemInfo getInfo() {
+        return itemInfo;
     }
-    private void scaleToSmaller(View v)
-    {
-        Animation loadAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_xysize_smaller_anim);
-        v.clearAnimation();
-        v.startAnimation(loadAnimation);
-    }
-    private void scaleToNormal(View v)
-    {
-        Animation loadAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_xysize_normal_anim);
-        v.clearAnimation();
-        v.startAnimation(loadAnimation);
+
+    @Override
+    public void setInfo(ItemInfo info) {
+        this.itemInfo=info;
     }
 }
